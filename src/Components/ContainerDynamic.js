@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react';
 import '../App.css';
 
 const ContainerDynamic = ({latitude, longitude}) => {
@@ -12,25 +12,23 @@ const ContainerDynamic = ({latitude, longitude}) => {
 	const [windSpeed, setWindSpeed] = useState(0);
 	const [stateClouds, setStateClouds] = useState(0);
 	const [pressure, setPressure] = useState(0);
+	const [celsius, setCelsius] = useState('on');
+	const [units, setUnits] = useState('ms');
+	const API_key_Two = "4a1dd36e65134f5bdcffc85fca19bad0";
+	let url;
+
+	if(celsius==='on'){
+		url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${API_key_Two}`;
+	}else {
+		url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=imperial&appid=${API_key_Two}`;
+	}
 
 	useEffect(()=>{
-		console.log("véamos las variables");
-		console.log(longitude);
-		console.log(latitude);
-		let API_key_Two = "31ab60a6f1437aea577f5ecbef2fdbc7";
-	    let url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${API_key_Two}`;
-
-	    fetch(url)
+		fetch(url)
 	    .then(response => {
-	      console.log(url);
 	      return response.json();
 	    })
 	    .then(data => {
-	      console.log("Veamos de la 2da aPI");
-	      console.log("Veamos los datos arrojados");
-	      console.log(data);
-	      console.log("Al fin");
-	      console.log("Veamos qué pinta");
 			setCity(data.name);
 			setAbbreviatonCity(data.sys.country);
 			setUrlIcon(data.weather[0].icon);
@@ -39,25 +37,15 @@ const ContainerDynamic = ({latitude, longitude}) => {
 			setWindSpeed(data.wind.speed);
 			setPressure(data.main.pressure);
 			setStateClouds(data.clouds.all);
-
-			console.log("nubes, value: ",data.clouds.all);
-			console.log("ciudad: ",city);
-			console.log("abreviacion: ",abbreviatonCity);
-			console.log("clima: ", temperature);
-			console.log("cielo: ",stateSky);
-			console.log("velocidad: ",windSpeed);
-			console.log("Presion:", pressure);
-
-			// console.log();
 	      });
-	}, [latitude, longitude, abbreviatonCity, temperature, stateSky, windSpeed, urlIcon, pressure, city])
-	urlIconShowPage = `https://openweathermap.org/img/wn/${urlIcon}@2x.png`
-
+	}, [latitude, longitude, abbreviatonCity, temperature, stateSky, windSpeed, urlIcon, pressure, city, celsius])
+	
+	urlIconShowPage = `https://openweathermap.org/img/wn/${urlIcon}@2x.png`;
 
 	return (
 		<div>
 			<div className="NameApp">
-				<h3>{city},{abbreviatonCity}</h3>
+				<h3>{city}, {abbreviatonCity}</h3>
 			</div>
 			<div className="Weather">
 				<div>
@@ -70,12 +58,22 @@ const ContainerDynamic = ({latitude, longitude}) => {
 			<div className="DescriptionWeather">
 				<ul>
 					<li>{stateSky}</li>
-					<li>"Wind speed: {windSpeed} ms" </li>
-					<li>"Clouds: {stateClouds}%" </li>
-					<li>"Pressure: {pressure} mb"</li>
+					<li>Wind speed: {windSpeed} {units} </li>
+					<li>Clouds: {stateClouds}% </li>
+					<li>Pressure: {pressure} mb</li>
 				</ul>
 			</div>
-			<div></div>
+				<button onClick={()=>{
+		            if(celsius=== 'on'){
+		              setCelsius('off');
+		              setUnits('miles');
+		            }  
+		            else {
+		              setCelsius('on');
+		              setUnits('ms');
+		            }
+		        }} >Degrees °F/°C
+		        </button>
 		</div>
 	)
 }
